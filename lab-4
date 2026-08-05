@@ -1,0 +1,218 @@
+#App.css
+
+.App {
+    text-align: center;
+    margin-top: 20px;
+}
+
+input {
+    padding: 8px;
+    margin: 10px;
+}
+
+button {
+    padding: 8px;
+    margin: 5px;
+}
+
+#App.js
+
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import Todo from "./Todo";
+import db from "./firebase";
+
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+import "firebase/compat/auth";
+
+function App() {
+  const [todos, setTodos] = useState([]);
+  const [input, setInput] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection("todos")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) => {
+        setTodos(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            todo: doc.data().todo,
+          }))
+        );
+      });
+
+    return unsubscribe;
+  }, []);
+
+  const addTodo = (event) => {
+    event.preventDefault();
+
+    db.collection("todos").add({
+      todo: input,
+      timestamp:
+        firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    setInput("");
+  };
+
+  return (
+    <div className="App">
+      <h1>Build A Todo App 🚀</h1>
+
+      <form onSubmit={addTodo}>
+        <span>Write a Todo</span>
+
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
+
+        <button
+          disabled={!input}
+          type="submit"
+        >
+          Add Todo
+        </button>
+      </form>
+
+      <ul>
+        {todos.map((todo) => (
+          <Todo
+            key={todo.id}
+            todo={todo}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+
+#Firebase.js
+
+// Import the functions you need from the SDKs you need
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyD3mU8yHeFfo_Un72sIgT7oyoWtNOG3WYo",
+  authDomain: "todo-app-5ab19.firebaseapp.com",
+  projectId: "todo-app-5ab19",
+  storageBucket: "todo-app-5ab19.firebasestorage.app",
+  messagingSenderId: "243697880523",
+  appId: "1:243697880523:web:cce7da514206ff43c7ba4e",
+  measurementId: "G-K0ZMRENGC8"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+export default db;
+
+#Index.css
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+#Index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+const root = ReactDOM.createRoot(
+  document.getElementById('root')
+);
+
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+#Todo.css
+
+.todo_list {
+    list-style: none;
+    padding: 10px;
+}
+
+#Todo.js
+
+import React, { useState } from "react";
+import "./Todo.css";
+import db from "./firebase";
+
+function Todo(props) {
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState(props.todo.todo);
+
+  const updateTodo = () => {
+    db.collection("todos")
+      .doc(props.todo.id)
+      .set(
+        {
+          todo: input,
+        },
+        { merge: true }
+      );
+
+    setOpen(false);
+  };
+
+  return (
+    <>
+      {open && (
+        <div className="modal">
+          <h3>Edit Todo</h3>
+
+          <input
+            value={input}
+            placeholder={props.todo.todo}
+            onChange={(e) => setInput(e.target.value)}
+          />
+
+          <button onClick={updateTodo}>
+            Update Todo
+          </button>
+
+          <button onClick={() => setOpen(false)}>
+            Close
+          </button>
+        </div>
+      )}
+
+      <ul className="todo_list">
+        <li>{props.todo.todo}</li>
+
+        <button onClick={() => setOpen(true)}>
+         🖌️ Edit
+        </button>
+
+        <button
+          onClick={() =>
+            db.collection("todos")
+              .doc(props.todo.id)
+              .delete()
+          }
+        >
+          🗑️Delete
+        </button>
+      </ul>
+    </>
+  );
+}
+
+export default Todo;
