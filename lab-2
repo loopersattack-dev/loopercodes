@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Module</title>
+    <!--Bootstrap CDN-->
+    <link rel="stylesheet"href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>
+        body{
+            overflow:hidden;
+        }
+
+        .chat-box{
+            height: 90vh;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .Chatcontainer{
+            margin-bottom: 10px;
+            padding: 10px;
+            margin: 10px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .Chatcontainer.darker{
+            background-color: #d1e7dd;
+        }
+
+        img{
+            width: 40px;
+            border-radius: 50%;
+        }
+
+        #user1-input-box{
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 45%;
+        }
+
+        #user2-input-box{
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 45%;
+        }
+
+        input{
+            width: 70%;
+            padding: 5px;
+        }
+
+        button{
+            padding: 5px 10px;
+        } 
+    </style>
+</head>
+<body>
+
+        <div class="container-fluid">
+            <div class="row">
+
+                <!--USER1-->
+                <div class="col-lg-6 bg-light">
+                    <h5 class="text-center">User 1</h5>
+                    <div id="user1-feed"class="chat-box"></div>
+
+                    <div id="user1-input-box">
+                        <input type="text"id="user1-input"placeholder="User 1: Type message">
+                        <button onclick="sendMessage('user1')">Send</button>
+                    </div>
+                </div>
+
+                <!--USER2-->
+                <div class="col-lg-6 bg-secondary text-white">
+                    <h5 class="text-center">User 2</h5>
+                    <div id="user2-feed"class="chat-box"></div>
+
+                    <div id="user2-input-box">
+                        <input type="text"id="user2-input"placeholder="User 2: Type message">
+                        <button onclick="sendMessage('user2')">Send</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    <script>
+        function createMessageElement(user, message) {
+                var messageElement = document.createElement('div');
+
+                // Style based on sender
+                if (user === "user1") {
+                    messageElement.className = 'Chatcontainer';
+                    var imgSrc = "https://www.w3schools.com/w3images/bandmember.jpg";
+                } else {
+                    messageElement.className = 'Chatcontainer darker';
+                    var imgSrc = "https://www.w3schools.com/w3images/avatar_g2.jpg";
+                }
+
+                // Image
+                var img = document.createElement('img');
+                img.src = imgSrc;
+
+                // Message text (SAFE)
+                var text = document.createElement('p');
+                text.textContent = message;
+
+                // Time
+                var time = document.createElement('span');
+                time.style.marginLeft = "auto";
+                time.style.fontSize = "12px";
+                time.textContent = new Date().toLocaleTimeString();
+
+                messageElement.appendChild(img);
+                messageElement.appendChild(text);
+                messageElement.appendChild(time);
+
+                return messageElement;
+            }
+
+            function sendMessage(user) {
+                var inputElement = document.getElementById(user + '-input');
+                var message = inputElement.value;
+
+                if (message.trim() === "") return;
+
+                inputElement.value = '';
+
+                // Show message in BOTH chats
+                var feeds = ["user1-feed", "user2-feed"];
+
+                feeds.forEach(function (feedId) {
+                    var feedElement = document.getElementById(feedId);
+
+                    var messageElement = createMessageElement(user, message);
+                    feedElement.appendChild(messageElement);
+
+                    feedElement.scrollTop = feedElement.scrollHeight;
+                });
+            }
+
+            /* ENTER key support */
+            document.getElementById("user1-input").addEventListener("keypress", function (e) {
+                if (e.key === "Enter") sendMessage("user1");
+            });
+
+            document.getElementById("user2-input").addEventListener("keypress", function (e) {
+                if (e.key === "Enter") sendMessage("user2");
+            });
+    </script>
+</body>
+</html>
