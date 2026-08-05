@@ -1,0 +1,136 @@
+#App.css
+
+button {
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+input {
+  text-align: right;
+  padding-right: 10px;
+}
+
+#App.js
+
+import React, { useState } from "react";
+import "./App.css";
+
+function App() {
+  const [input, setInput] = useState("");
+
+  const handleClick = (value) => {
+    setInput((prev) => prev + value);
+  };
+
+  const clearInput = () => {
+    setInput("");
+  };
+
+  const calculateResult = () => {
+    try {
+      const result = eval(input);
+      setInput(result.toString());
+    } catch (error) {
+      setInput("Error");
+    }
+  };
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h2>Simple Calculator</h2>
+
+      <input
+        type="text"
+        value={input}
+        readOnly
+        style={{ width: "200px", height: "40px", fontSize: "18px" }}
+      />
+
+      <br /><br />
+
+      <div>
+        <button onClick={() => handleClick("7")}>7</button>
+        <button onClick={() => handleClick("8")}>8</button>
+        <button onClick={() => handleClick("9")}>9</button>
+        <button onClick={() => handleClick("/")}>/</button>
+      </div>
+
+      <div>
+        <button onClick={() => handleClick("4")}>4</button>
+        <button onClick={() => handleClick("5")}>5</button>
+        <button onClick={() => handleClick("6")}>6</button>
+        <button onClick={() => handleClick("*")}>*</button>
+      </div>
+
+      <div>
+        <button onClick={() => handleClick("1")}>1</button>
+        <button onClick={() => handleClick("2")}>2</button>
+        <button onClick={() => handleClick("3")}>3</button>
+        <button onClick={() => handleClick("-")}>-</button>
+      </div>
+
+      <div>
+        <button onClick={() => handleClick("0")}>0</button>
+        <button onClick={clearInput}>C</button>
+        <button onClick={calculateResult}>=</button>
+        <button onClick={() => handleClick("+")}>+</button>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+#App.test.js
+
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('renders learn react link', () => {
+  render(<App />);
+  const linkElement = screen.getByText(/learn react/i);
+  expect(linkElement).toBeInTheDocument();
+});
+
+#Index.css
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#Index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
